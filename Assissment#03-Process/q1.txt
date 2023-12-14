@@ -1,0 +1,62 @@
+#include <stdio.h>
+#include <stdlib.h>
+#include <unistd.h>
+#include <sys/wait.h>
+
+void printHello(int n) {
+    int i = 0;
+    while (i < n) {
+        printf("Hello\n");
+        i++;
+    }
+}
+
+int main() {
+    pid_t pid1, pid2, pid3, pid4;
+
+    printf("Parent process (PID %d) is running\n", getpid());
+
+    pid1 = fork();
+    
+    if (pid1 == 0) {
+        // First child process
+        printf("Child 1 (PID %d) is running\n", getpid());
+        printHello(2);
+    } else {
+        // Parent process
+        wait(NULL);
+        pid2 = fork();
+
+        if (pid2 == 0) {
+            // Second child process
+            printf("Child 2 (PID %d) is running\n", getpid());
+            printHello(2);
+        } else {
+            // Parent process
+            wait(NULL);
+            pid3 = fork();
+
+            if (pid3 == 0) {
+                // Third child process
+                printf("Child 3 (PID %d) is running\n", getpid());
+                printHello(2);
+            } else {
+                // Parent process
+                wait(NULL);
+                pid4 = fork();
+
+                if (pid4 == 0) {
+                    // Fourth child process
+                    printf("Child 4 (PID %d) is running\n", getpid());
+                    printHello(2);
+                } else {
+                    // Parent process
+                    wait(NULL);
+                    printf("Parent process (PID %d) is exiting\n", getpid());
+                }
+            }
+        }
+    }
+
+    return 0;
+}

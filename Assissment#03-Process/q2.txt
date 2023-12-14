@@ -1,0 +1,43 @@
+#include <stdio.h>
+#include <stdlib.h>
+#include <unistd.h>
+#include <sys/wait.h>
+
+int main(int argc, char *argv[]) {
+    // Check if a filename is provided as a command line argument
+    if (argc != 2) {
+        fprintf(stderr, "Usage: %s <filename>\n", argv[0]);
+        exit(EXIT_FAILURE);
+    }
+
+    // Step 1: Spawn a child process
+    pid_t pid = fork();
+
+    if (pid < 0) {
+        perror("fork");
+        exit(EXIT_FAILURE);
+    } else if (pid == 0) {
+        // Step 2: Child process calls exec to run with the command line argument
+        execlp("cat", "cat", argv[1], NULL);
+        // If execlp fails, print an error message and exit
+        perror("exec");
+        exit(EXIT_FAILURE);
+    } else {
+        // Step 3: Parent process calls wait to block until the child terminates
+        int status;
+        wait(&status);
+
+        if (WIFEXITED(status) && WEXITSTATUS(status) == 0) {
+            // Step 4: New child calls exec again to run on the same argument
+            execlp("cat", "cat", argv[1], NULL);
+            // If execlp fails, print an error message and exit
+            perror("exec");
+            exit(EXIT_FAILURE);
+        } else {
+            // Parent termination status should be 0 if all has gone well
+            printf("Parent process terminated successfully.\n");
+        }
+    }
+
+    return 0;
+}
