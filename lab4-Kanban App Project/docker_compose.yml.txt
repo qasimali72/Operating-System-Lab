@@ -1,0 +1,16 @@
+version: '3'
+services:
+
+	kanban-postgres:
+		image:"postgres:9.6-alpine"
+		contaniner_name: kanban-postgres
+		volumes:
+			- kanban-data:\User\PC\Desktop\Semester\OS lab\lab7\postgresql\data
+		ports:
+			- 5432:5432
+		environment:
+			- POSTGRES_DB=KANBAN
+			- POSTGRES_USER=KANBAN
+			- POSTGRES_PASSEORD=KANBAN
+volumes:
+	kanban-data:
